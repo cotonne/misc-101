@@ -6,6 +6,8 @@ var privateKey  = fs.readFileSync('certs/key.pem', 'utf8');
 var certificate = fs.readFileSync('certs/certificate.pem', 'utf8');
 const app = express()
 const httpApp = express();
+const os = require('os');
+const hostname = os.hostname();
 
 var express_enforces_ssl = require('express-enforces-ssl');
 httpApp.use(express_enforces_ssl());
@@ -93,7 +95,7 @@ app.get('/', (req, res) => {
         const template = `
 <html>
 	<head>
-		<script src="https://192.168.43.139/test.js">
+		<script src="https://${hostname}/test.js">
 		</script>
 	</head>
 	<body>
