@@ -1,6 +1,8 @@
 const fs = require('fs');
 const express = require('express');
 const http = require('http');
+var cors = require('cors')
+
 var https = require('https');
 var privateKey  = fs.readFileSync('certs/key.pem', 'utf8');
 var certificate = fs.readFileSync('certs/certificate.pem', 'utf8');
@@ -14,14 +16,18 @@ httpApp.use(express_enforces_ssl());
 
 const helmet = require('helmet')
 app.use(helmet.xssFilter());
-app.use(helmet.frameguard({ action: 'deny' }));
 app.use(helmet.noSniff());
+// app.use(helmet.frameguard({ action: 'deny' }));
+app.use(helmet.frameguard({
+  action: 'allow-from',
+  domain: '*'
+}))
 var sixtyDaysInSeconds = 5184000
 app.use(helmet.hsts({
 	  maxAge: sixtyDaysInSeconds
 }));
 var csp = require('helmet-csp')
-
+/*
 app.use(csp({
   // Specify directives as normal.
   directives: {
@@ -58,7 +64,7 @@ app.use(csp({
   // This defaults to `true`.
   browserSniff: true
 }))
-
+*/
 const session = require('cookie-session')
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000) // 1 hour
 app.use(session({
@@ -75,11 +81,18 @@ app.use(session({
 
 app.use(express.static('public'))
 
-app.use((req, res, next) => {
-	  res.header("Access-Control-Allow-Origin", "localhost");
-	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-	  next();
-});
+var corsOptions = {
+	origin: "https://yvan-XPS-13-9360"
+//	origin: true
+};
+app.use(cors(corsOptions));
+app.options('*', cors()) // include before other routes
+
+//app.use((req, res, next) => {
+//	  res.header("Access-Control-Allow-Origin", "https://localhost");
+//	  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//	  next();
+//});
 
 
 
@@ -88,7 +101,7 @@ app.get('/', function (req, res, next) {
    next();
 })
 
-app.get('/', (req, res) => {
+const reponse = (req, res) => {
 //	res.cookie('cookieName', 'cookieValue');
 	const weak_param = req.query.weak_param || "no param";
 	console.log(weak_param);
@@ -101,12 +114,19 @@ app.get('/', (req, res) => {
 	<body>
 		Hello World!
 		${weak_param}
+	        <form method="post" action="https://localhost/">
+                  <input type="submit" value="Submit"/>
+		</form>
 	</body>
 </html>`;
 	res.send(template);
 	res.end(req.session.views + ' views')
 
-});
+};
+
+app.get('/', reponse);
+
+app.post('/', reponse);
 
 //app.listen(3000, () => console.log('Example app listening on port 3000!'))
 var httpServer = http.createServer(httpApp);
