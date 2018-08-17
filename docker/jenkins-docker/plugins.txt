@@ -1,3 +1,4 @@
+log-parser
 build-pipeline-plugin
 workflow-api
 workflow-aggregator

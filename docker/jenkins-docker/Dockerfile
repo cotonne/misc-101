@@ -22,10 +22,13 @@ RUN tar -xf ZAP_2.7.0_Linux.tar.gz -C /zap
 ENV ZAP_PATH=/zap/ZAP_2.7.0/
 
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt 
-RUN wget -O /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip https://github.com/SonarSource/sonar-scanner-cli/archive/3.2.0.1227.zip
+RUN wget -O /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.2.0.1227-linux.zip
 RUN mkdir -p /var/sonar-scanner
 RUN unzip /tmp/sonar-scanner-cli-3.2.0.1227-linux.zip -d /var/sonar-scanner/
 RUN sed -i 's/use_embedded_jre=true/use_embedded_jre=false/g' /var/sonar-scanner/sonar-scanner-3.2.0.1227-linux/bin/sonar-scanner
 COPY sonar-scanner.properties /var/sonar-scanner/sonar-scanner-3.2.0.1227-linux/conf/sonar-scanner.properties
 ENV PATH="/var/sonar-scanner/sonar-scanner-3.2.0.1227-linux/bin/:${PATH}"
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+
+RUN mkdir -p /var/jenkins_home/jobs/Prototype_PassportJS/
+COPY config.xml /var/jenkins_home/jobs/Prototype_PassportJS/
