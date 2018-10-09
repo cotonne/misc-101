@@ -32,3 +32,7 @@ RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
 
 RUN mkdir -p /var/jenkins_home/jobs/Prototype_PassportJS/
 COPY config.xml /var/jenkins_home/jobs/Prototype_PassportJS/
+
+RUN pip2 install --upgrade couchdb requests pbkdf2 pymongo ipcalc six
+RUN wget -O /tmp/nosqlmap.zip https://github.com/cotonne/NoSQLMap/archive/master.zip && \
+    unzip /tmp/nosqlmap.zip -d /var/nosqlmap
